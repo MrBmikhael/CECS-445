@@ -14,7 +14,7 @@
         <title>JSP Page</title>
     </head>
     <body>
-        <form method="POST">
+        <form method="POST" action="Login">
             <input name="username" id="username" type="text" placeholder="Username">
             <input name="password" id="password" type="password" placeholder="Password">
             <input type="submit" value="Login">

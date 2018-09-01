@@ -18,7 +18,7 @@ import java.util.logging.Logger;
  * @author Bishoy M
  */
 public class DbManager {
-    public Connection getConnection()
+    private Connection getConnection()
     {
         try {
             Class.forName("com.mysql.jdbc.Driver");
@@ -45,8 +45,10 @@ public class DbManager {
         try {
             Statement stmt = conn.createStatement();
             ResultSet rs = stmt.executeQuery(q);
+            
             if (rs.first())
                 return rs.getString("password");
+            
         } catch (SQLException ex) {
             Logger.getLogger(DbManager.class.getName()).log(Level.SEVERE, null, ex);
         }
