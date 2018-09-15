@@ -63,7 +63,7 @@ public class Main {
     try (Connection connection = dataSource.getConnection()) {
       Statement stmt = connection.createStatement();
       stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL)");
-      stmt.executeUpdate("INSERT INTO users VALUES (admin, admin)");
+      stmt.executeUpdate("INSERT INTO users (username, password) VALUES ('admin', 'admin')");
       ResultSet rs = stmt.executeQuery("SELECT username FROM users");
 
       ArrayList<String> output = new ArrayList<String>();
