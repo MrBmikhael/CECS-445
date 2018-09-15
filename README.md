@@ -1,4 +1,4 @@
-# java-getting-started
+# CECS 445 - [Open App](https://cecs-445-ems.herokuapp.com/)
 
 [![CircleCI](https://circleci.com/gh/heroku/java-getting-started.svg?style=svg)](https://circleci.com/gh/heroku/java-getting-started)
 
