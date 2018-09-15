@@ -55,7 +55,7 @@ public class Main {
 
 	@RequestMapping("/dashboard")
 	String dashboard() {
-		return "dashboard";
+		return "index";
 	}
   
 	@RequestMapping("/setup")
@@ -85,7 +85,7 @@ public class Main {
 			String url = "postgres://aynswouxmwktev:a6e450bd67a99278ae791bc37b5755acb08c0e452476f1de8c97a1c4f28a372c@ec2-54-83-50-145.compute-1.amazonaws.com:5432/dfaehfj8qacat4";
 			System.out.println("================================================================================");
 			System.out.println("No dbUrl!");
-			System.out.println(u1rl);
+			System.out.println(url);
 			System.out.println("================================================================================");
 			HikariConfig config = new HikariConfig();
 			config.setJdbcUrl(url);
