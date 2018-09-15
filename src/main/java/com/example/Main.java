@@ -38,56 +38,67 @@ import java.util.Map;
 @SpringBootApplication
 public class Main {
 
-  @Value("${spring.datasource.url}")
-  private String dbUrl;
+	@Value("${spring.datasource.url}")
+	private String dbUrl;
 
-  @Autowired
-  private DataSource dataSource;
+	@Autowired
+	private DataSource dataSource;
 
-  public static void main(String[] args) throws Exception {
-    SpringApplication.run(Main.class, args);
-  }
+	public static void main(String[] args) throws Exception {
+		SpringApplication.run(Main.class, args);
+	}
 
-  @RequestMapping("/")
-  String index() {
-    return "index";
-  }
+	@RequestMapping("/")
+	String index() {
+		return "index";
+	}
+
+	@RequestMapping("/dashboard")
+	String dashboard() {
+		return "dashboard";
+	}
   
-  @RequestMapping("/login")
-  String dashboard() {
-    return "dashboard";
-  }
-  
-  @RequestMapping("/setup")
-  String db(Map<String, Object> model) {
-    try (Connection connection = dataSource.getConnection()) {
-      Statement stmt = connection.createStatement();
-      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL)");
-      stmt.executeUpdate("INSERT INTO users (USERNAME, PASSWORD) VALUES ('admin', 'admin')");
-      ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+	@RequestMapping("/setup")
+	String db(Map<String, Object> model) {
+		try (Connection connection = dataSource.getConnection()) {
+			Statement stmt = connection.createStatement();
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL)");
+			stmt.executeUpdate("INSERT INTO users (USERNAME, PASSWORD) VALUES ('admin', 'admin')");
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users");
 
-      ArrayList<String> output = new ArrayList<String>();
-      while (rs.next()) {
-        output.add("Read from DB: " + rs.getObject("USERNAME") + " / " + rs.getObject("PASSWORD"));
-      }
+			ArrayList<String> output = new ArrayList<String>();
+			while (rs.next()) {
+				output.add("Read from DB: " + rs.getObject("USERNAME") + " / " + rs.getObject("PASSWORD"));
+			}
 
-      model.put("records", output);
-      return "db";
-    } catch (Exception e) {
-      model.put("message", e.getMessage());
-      return "error";
-    }
-  }
+			model.put("records", output);
+			return "db";
+		} catch (Exception e) {
+			model.put("message", e.getMessage());
+			return "error";
+		}
+	}
 
-  @Bean
-  public DataSource dataSource() throws SQLException {
-    if (dbUrl == null || dbUrl.isEmpty()) {
-      return new HikariDataSource();
-    } else {
-      HikariConfig config = new HikariConfig();
-      config.setJdbcUrl(dbUrl);
-      return new HikariDataSource(config);
-    }
-  }
+    @Bean
+    public DataSource dataSource() throws SQLException {
+        if (dbUrl == null || dbUrl.isEmpty()) {
+			String url = "postgres://aynswouxmwktev:a6e450bd67a99278ae791bc37b5755acb08c0e452476f1de8c97a1c4f28a372c@ec2-54-83-50-145.compute-1.amazonaws.com:5432/dfaehfj8qacat4";
+			System.out.println("================================================================================");
+			System.out.println("No dbUrl!");
+			System.out.println(u1rl);
+			System.out.println("================================================================================");
+			HikariConfig config = new HikariConfig();
+			config.setJdbcUrl(url);
+			return new HikariDataSource(config);
+		} else {
+			System.out.println("================================================================================");
+			System.out.println("Found dbUrl!");
+			System.out.println(dbUrl);
+			System.out.println("================================================================================");
+			HikariConfig config = new HikariConfig();
+			config.setJdbcUrl(dbUrl);
+			return new HikariDataSource(config);
+		}
+	}
 
 }

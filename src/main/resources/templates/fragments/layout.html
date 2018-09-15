@@ -1,7 +1,7 @@
 <!doctype html>
 <html th:fragment="layout (template, menu)">
 <head>
-    <title>Java Getting Started on Heroku</title>
+    <title>CECS 445</title>
     <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.3.4/css/bootstrap.min.css" />
     <link rel="stylesheet" type="text/css" href="/stylesheets/main.css" />
 </head>
@@ -33,11 +33,17 @@
                     </ul>
                 </li>
             </ul>
-            <ul class="nav navbar-nav navbar-right">
-                <li class="navbar-right">
-                    <a href="https://devcenter.heroku.com"><span class="glyphicon glyphicon-book"></span> Heroku Dev Center</a>
-                </li>
-            </ul>
+			<form class="navbar-form navbar-right form-inline" method="POST">
+				<div class="form-group">
+					<label class="sr-only" for="username">Username</label>
+					<input class="form-control" name="username" placeholder="Username" type="text">
+				</div>
+				<div class="form-group">
+					<label class="sr-only" for="password">Password</label>
+					<input class="form-control" name="password" placeholder="Password" type="password">
+				</div>
+				<button type="submit" class="btn btn-default">Login</button>
+			</form>
         </div>
     </nav>
     <div th:replace="${template}"/>
