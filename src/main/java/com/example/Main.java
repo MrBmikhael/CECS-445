@@ -64,7 +64,7 @@ public class Main {
       Statement stmt = connection.createStatement();
       stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL)");
       stmt.executeUpdate("INSERT INTO users (USERNAME, PASSWORD) VALUES ('admin', 'admin')");
-      ResultSet rs = stmt.executeQuery("SELECT username FROM users");
+      ResultSet rs = stmt.executeQuery("SELECT * FROM users");
 
       ArrayList<String> output = new ArrayList<String>();
       while (rs.next()) {
