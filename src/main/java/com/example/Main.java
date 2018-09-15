@@ -62,8 +62,8 @@ public class Main {
   String db(Map<String, Object> model) {
     try (Connection connection = dataSource.getConnection()) {
       Statement stmt = connection.createStatement();
-      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (username password )");
-      stmt.executeUpdate("INSERT INTO users VALUES (admin admin)");
+      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (id INTEGER PRIMARY KEY AUTOINCREMENT NOT NULL, username TEXT NOT NULL, password TEXT NOT NULL)");
+      stmt.executeUpdate("INSERT INTO users VALUES (0, admin admin)");
       ResultSet rs = stmt.executeQuery("SELECT username FROM users");
 
       ArrayList<String> output = new ArrayList<String>();
