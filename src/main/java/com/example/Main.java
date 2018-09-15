@@ -52,18 +52,23 @@ public class Main {
   String index() {
     return "index";
   }
-
-  @RequestMapping("/db")
+  
+  @RequestMapping("/login")
+  String dashboard() {
+    return "dashboard";
+  }
+  
+  @RequestMapping("/setup")
   String db(Map<String, Object> model) {
     try (Connection connection = dataSource.getConnection()) {
       Statement stmt = connection.createStatement();
-      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS ticks (tick timestamp)");
-      stmt.executeUpdate("INSERT INTO ticks VALUES (now())");
-      ResultSet rs = stmt.executeQuery("SELECT tick FROM ticks");
+      stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (username password )");
+      stmt.executeUpdate("INSERT INTO users VALUES (admin admin)");
+      ResultSet rs = stmt.executeQuery("SELECT username FROM users");
 
       ArrayList<String> output = new ArrayList<String>();
       while (rs.next()) {
-        output.add("Read from DB: " + rs.getTimestamp("tick"));
+        output.add("Read from DB: " + rs);
       }
 
       model.put("records", output);
