@@ -25,6 +25,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.boot.builder.SpringApplicationBuilder;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -34,73 +36,9 @@ import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Map;
 
-@Controller
 @SpringBootApplication
 public class Main {
-
-	@Value("${spring.datasource.url}")
-	private String dbUrl;
-
-	@Autowired
-	private DataSource dataSource;
-
 	public static void main(String[] args) throws Exception {
 		SpringApplication.run(Main.class, args);
 	}
-
-	@RequestMapping("/")
-	String index() {
-		return "index";
-	}
-
-	@RequestMapping("/dashboard")
-	String dashboard() {
-		return "index";
-	}
-  
-	@RequestMapping("/setup")
-	String db(Map<String, Object> model) {
-		try (Connection connection = dataSource.getConnection()) {
-			Statement stmt = connection.createStatement();
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL)");
-			stmt.executeUpdate("INSERT INTO users (USERNAME, PASSWORD) VALUES ('admin', 'admin')");
-			ResultSet rs = stmt.executeQuery("SELECT * FROM users");
-
-			ArrayList<String> output = new ArrayList<String>();
-			while (rs.next()) {
-				output.add("Read from DB: " + rs.getObject("USERNAME") + " / " + rs.getObject("PASSWORD"));
-			}
-
-			model.put("records", output);
-			return "db";
-		} catch (Exception e) {
-			model.put("message", e.getMessage());
-			return "error";
-		}
-	}
-
-    @Bean
-    public DataSource dataSource() throws SQLException {
-        if (dbUrl == null || dbUrl.isEmpty()) {
-			String url = "jdbc:postgresql://ec2-54-83-50-145.compute-1.amazonaws.com:5432/dfaehfj8qacat4?sslmode=require";
-			System.out.println("================================================================================");
-			System.out.println("No dbUrl!");
-			System.out.println(url);
-			System.out.println("================================================================================");
-			HikariConfig config = new HikariConfig();
-			config.setJdbcUrl(url);
-			config.setUsername("aynswouxmwktev");
-			config.setPassword("a6e450bd67a99278ae791bc37b5755acb08c0e452476f1de8c97a1c4f28a372c");
-			return new HikariDataSource(config);
-		} else {
-			System.out.println("================================================================================");
-			System.out.println("Found dbUrl!");
-			System.out.println(dbUrl);
-			System.out.println("================================================================================");
-			HikariConfig config = new HikariConfig();
-			config.setJdbcUrl(dbUrl);
-			return new HikariDataSource(config);
-		}
-	}
-
 }
