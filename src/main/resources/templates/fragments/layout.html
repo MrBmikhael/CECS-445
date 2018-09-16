@@ -47,14 +47,6 @@
         </div>
     </nav>
 	
-	<script>
-		var x = "${error_msg}"
-		if (x != "${error_msg}")
-		{
-			document.write("<div class=\"alert alert-danger\"><strong>Error!</strong>" + x + "</div>");
-		}
-	</script>
-	
     <div th:replace="${template}"/>
 
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
