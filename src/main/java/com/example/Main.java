@@ -82,13 +82,15 @@ public class Main {
     @Bean
     public DataSource dataSource() throws SQLException {
         if (dbUrl == null || dbUrl.isEmpty()) {
-			String url = "postgres://aynswouxmwktev:a6e450bd67a99278ae791bc37b5755acb08c0e452476f1de8c97a1c4f28a372c@ec2-54-83-50-145.compute-1.amazonaws.com:5432/dfaehfj8qacat4";
+			String url = "jdbc:postgresql://ec2-54-83-50-145.compute-1.amazonaws.com:5432/dfaehfj8qacat4?sslmode=require";
 			System.out.println("================================================================================");
 			System.out.println("No dbUrl!");
 			System.out.println(url);
 			System.out.println("================================================================================");
 			HikariConfig config = new HikariConfig();
 			config.setJdbcUrl(url);
+			config.setUsername("aynswouxmwktev");
+			config.setPassword("a6e450bd67a99278ae791bc37b5755acb08c0e452476f1de8c97a1c4f28a372c");
 			return new HikariDataSource(config);
 		} else {
 			System.out.println("================================================================================");
