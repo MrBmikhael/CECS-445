@@ -7,8 +7,7 @@
 	<script>
 	function startTime() {
 		var today = new Date();
-		document.getElementById('time').innerHTML = "<h3>" + today.toDateString() + "<br><span class=\"glyphicon glyphicon-time\"></span> " + 
-			today.getHours() + ":" + today.getMinutes() + "</h3>";
+		document.getElementById('time').innerHTML = "<h3>" + today.toDateString() + "<br> " + today.getHours() + ":" + today.getMinutes() + "</h3>";
 		var t = setTimeout(startTime, 500);
 	}
 	</script>
