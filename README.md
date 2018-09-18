@@ -9,11 +9,18 @@ Make sure you have [Java 8](http://www.oracle.com/technetwork/java/javase/downlo
 ```sh
 $ git clone https://github.com/MrBmikhael/CECS-445.git
 $ cd CECS-445
-$ mvn install
-$ heroku local:start
+$ mvn clean install
+$ heroku local web
 ```
 
 Your app should now be running on [localhost:5000](http://localhost:5000/).
+
+## Tools Used
+
+- [Spring Framework](http://spring.io/)
+- [Bootstrap v3.3.7](https://getbootstrap.com/)
+- [jQuery v3.3.1](https://jquery.com/)
+
 
 ## Documentation
 
