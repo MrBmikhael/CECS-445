@@ -7,7 +7,7 @@
 	<script>
 	function startTime() {
 		var today = new Date();
-		document.getElementById('time').innerHTML = "<h3>" + today.toDateString() + "<br> " + today.getHours() + ":" + today.getMinutes() + "</h3>";
+		document.getElementById('time').innerHTML = "<h3>" + today.toDateString() + "<br> " + today.getHours() + ":" + ((today.getMinutes() < 10 ? "0" : "") + today.getMinutes()) + ":" + ((today.getSeconds() < 10 ? "0" : "") + today.getSeconds()) + "</h3>";
 		var t = setTimeout(startTime, 500);
 	}
 	</script>
@@ -25,6 +25,9 @@
 				</li>
 				<li th:switch="${logged}">
 					<a th:case="'1'" href="/timesheet"><span class="glyphicon glyphicon-list-alt"></span> Timesheet </a>
+				</li>
+				<li th:switch="${logged}">
+					<a th:case="'1'" href="/request"><span class="glyphicon glyphicon-list-alt"></span> Request Paid Time Off </a>
 				</li>
                 
             </ul>

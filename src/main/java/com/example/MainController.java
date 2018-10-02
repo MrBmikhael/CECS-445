@@ -51,6 +51,9 @@ public class MainController {
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL)");
 			stmt.executeUpdate("INSERT INTO users (USERNAME, PASSWORD) VALUES ('admin', 'admin')");
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users");
+			
+			stmt = connection.createStatement();
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS timesheet (ID SERIAL, USER_ID INTEGER NOT NULL REFERENCES users(ID), ACTION TEXT NOT NULL, TIMESTAMP timestamp NOT NULL, PRIMARY KEY (ID,USER_ID))");
 
 			ArrayList<String> output = new ArrayList<String>();
 			while (rs.next()) {
