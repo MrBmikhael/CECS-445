@@ -8,14 +8,21 @@
     <a href="/" class="lang-logo">
       <img src="/lang-logo.png">
     </a>
+	
 	<span th:switch="${logged}">
 		<span th:case="'1'">
 			<h1>Welcome <span th:text="${user}" /></h1>
 			<p id="time"></p>
-			<a type="button" class="btn btn-lg btn-default" href="/"><span class="glyphicon glyphicon-time"></span> Clock In </a>
-			<a type="button" class="btn btn-lg btn-default" href="/"><span class="glyphicon glyphicon-time"></span> Clock Out </a>
-			<a type="button" class="btn btn-lg btn-default" href="/"><span class="glyphicon glyphicon-time"></span> Break In </a>
-			<a type="button" class="btn btn-lg btn-default" href="/"><span class="glyphicon glyphicon-time"></span> Break Out </a>
+			
+			<div class="alert alert-success alert-dismissable" style="display: none;" id="record_status">
+				<button type="button" class="close" data-dismiss="alert" aria-hidden="true">&times;</button>
+				<span id="recordAlertMessage">Success! message sent successfully.</span>
+			</div>
+			
+			<button class="btn btn-lg btn-default" onclick="clockIn()"><span class="glyphicon glyphicon-time"></span> Clock In </button>
+			<button class="btn btn-lg btn-default" onclick="clockOut()"><span class="glyphicon glyphicon-time"></span> Clock Out </button>
+			<button class="btn btn-lg btn-default"  onclick="lunchIn()"><span class="glyphicon glyphicon-cutlery"></span> Lunch In </button>
+			<button class="btn btn-lg btn-default"  onclick="lunchOut()"><span class="glyphicon glyphicon-cutlery"></span> Lunch Out </button>
 		</span>
 		<span th:case="*">
 			<h1>Welcome</h1>
@@ -67,6 +74,66 @@
     Please do work through the Getting Started guide, even if you do know how to build such an application.  The guide covers the basics of working with Heroku, and will familiarize you with all the concepts you need in order to build and deploy your own apps.
   </div>
 </div>
+
+<script>
+
+function loadToday() {
+  return "";
+}
+
+function recordCallback(data) {
+  $('#recordAlertMessage')[0].innerHTML = data;
+  $('#record_status').show();
+}
+
+function clockIn() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      recordCallback(xhttp.response);
+    }
+  };
+  xhttp.open("POST", "/record", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhttp.send("action=clockIn");
+}
+
+function clockOut() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+	  recordCallback(xhttp.response);
+    }
+  };
+  xhttp.open("POST", "/record", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhttp.send("action=clockOut");
+}
+
+function lunchIn() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      recordCallback(xhttp.response);
+    }
+  };
+  xhttp.open("POST", "/record", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhttp.send("action=lunchIn");
+}
+
+function lunchOut() {
+  var xhttp = new XMLHttpRequest();
+  xhttp.onreadystatechange = function() {
+    if (this.readyState == 4 && this.status == 200) {
+      recordCallback(xhttp.response);
+    }
+  };
+  xhttp.open("POST", "/record", true);
+  xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
+  xhttp.send("action=lunchOut");
+}
+</script>
 
 </body>
 </html>

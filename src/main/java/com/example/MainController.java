@@ -10,6 +10,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
@@ -43,13 +44,24 @@ public class MainController {
 		
 		return "index";
 	}
+	
+	@RequestMapping(value = "/record", method = RequestMethod.POST)
+	@ResponseBody
+	String record() {
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			return "Record updated successfully!";
+		} catch (Exception e) {
+			return "Error adding record to database!";
+		}
+	}
   
 	@RequestMapping(value = "/setup", method = RequestMethod.GET)
 	String setup(Map<String, Object> model) {
 		try (Connection connection = database.getDataSource().getConnection()) {
 			Statement stmt = connection.createStatement();
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL)");
-			stmt.executeUpdate("INSERT INTO users (USERNAME, PASSWORD) VALUES ('admin', 'admin')");
+			stmt.executeUpdate("INSERT INTO users (USERNAME, PASSWORD) VALUES ('admin', 'admin') ON CONFLICT DO NOTHING");
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users");
 			
 			stmt = connection.createStatement();
