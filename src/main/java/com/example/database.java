@@ -43,6 +43,33 @@ public class database {
         return single_instance;
 	}
 	
+	public static boolean addRecordForUser(String Username, String Action) {
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='" + Username + "'");
+			rs.next();
+			String UserID = rs.getObject("ID").toString();
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', '" + Action + "', now())");
+			
+			return true;
+		} catch (Exception e) {
+			System.out.println("ERROR: " + e);
+			return false;
+		}
+	}
+	
+	public static String getUserID(String username) {
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();		
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='" + username + "'");
+			rs.next();
+
+			return rs.getString("ID");
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
 	public static boolean checkLogin(String username, String password)
 	{
 		try (Connection connection = database.getDataSource().getConnection()) {
@@ -50,10 +77,11 @@ public class database {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='" + username + "'");
 			rs.next();
 			
-			// System.out.println("Read from DB: " + rs.getObject("USERNAME") + " / " + rs.getObject("PASSWORD"));
-			// System.out.println("Read from input: " + username + " / " + password);
+			System.out.println(rs.getObject("ID"));
+			System.out.println(rs.getObject("USERNAME"));
+			System.out.println(rs.getObject("PASSWORD"));
 
-			return (rs.getObject("PASSWORD").equals(password));
+			return (rs.getString("PASSWORD").equals(password));
 			
 		} catch (Exception e) {
 			return false;

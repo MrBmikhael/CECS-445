@@ -29,6 +29,23 @@ import com.example.database;
 @Controller
 public class MainController {
 	
+	public String getAttributeFromSession(HttpServletRequest request, String key) {
+		if (!request.getSession().isNew())
+		{
+			Enumeration attributes = request.getSession().getAttributeNames();
+			while(attributes.hasMoreElements())
+			{
+				String ele = attributes.nextElement().toString();
+				
+				if (ele.equals(key)) {
+					return request.getSession().getAttribute(ele).toString();
+				}
+			}
+		}
+		
+		return "";
+	}
+	
 	@RequestMapping(value = "/", method = RequestMethod.GET)
 	String root(Map<String, Object> model, HttpServletRequest request) {
 		if (!request.getSession().isNew())
@@ -47,12 +64,29 @@ public class MainController {
 	
 	@RequestMapping(value = "/record", method = RequestMethod.POST)
 	@ResponseBody
-	String record() {
+	String record(HttpServletRequest request) {
+		if (database.addRecordForUser(getAttributeFromSession(request, "user"), request.getParameter("action")))
+			return "Record updated successfully!";
+		else
+			return "Error adding record to database!";
+	}
+  
+    @RequestMapping(value = "/view", method = RequestMethod.GET)
+	String view(Map<String, Object> model) {
 		try (Connection connection = database.getDataSource().getConnection()) {
 			Statement stmt = connection.createStatement();
-			return "Record updated successfully!";
+			ResultSet rs = stmt.executeQuery("SELECT * FROM timesheet");
+
+			ArrayList<String> output = new ArrayList<String>();
+			while (rs.next()) {
+				output.add("Read from DB: " + rs.getObject("USER_ID") + " | " + rs.getObject("ACTION") + " | " + rs.getObject("TIMESTAMP"));
+			}
+
+			model.put("records", output);
+			return "db";
 		} catch (Exception e) {
-			return "Error adding record to database!";
+			model.put("message", e.getMessage());
+			return "error";
 		}
 	}
   
