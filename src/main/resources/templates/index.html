@@ -11,7 +11,7 @@
 	
 	<span th:switch="${logged}">
 		<span th:case="'1'">
-			<h1>Welcome <span th:text="${user}" /></h1>
+			<h1>Welcome <br><span th:text="${user}" /></h1>
 			<p id="time"></p>
 			
 			<div class="alert alert-success alert-dismissable" style="display: none;" id="record_status">
@@ -26,52 +26,48 @@
 		</span>
 		<span th:case="*">
 			<h1>Welcome</h1>
-			<p>This is a sample Java application deployed to Heroku. It's a reasonably simple app - but a good foundation for understanding how to get the most out of the Heroku platform.</p>
+			<!-- <p>This is a sample Java application deployed to Heroku. It's a reasonably simple app - but a good foundation for understanding how to get the most out of the Heroku platform.</p>
 			<a type="button" class="btn btn-lg btn-default" href="https://devcenter.heroku.com/articles/getting-started-with-java"><span class="glyphicon glyphicon-flash"></span> Getting Started with Java</a>
 			<a type="button" class="btn btn-lg btn-primary" href="https://github.com/heroku/java-getting-started"><span class="glyphicon glyphicon-download"></span> Source on GitHub</a>
+			-->
 		</span>
 	</span>
   </div>
 </div>
+
 <div class="container">
-  <div class="alert alert-info text-center" role="alert">
+  <!--<div class="alert alert-info text-center" role="alert">
     To deploy your own copy, and learn the fundamentals of the Heroku platform, head over to the <a href="https://devcenter.heroku.com/articles/getting-started-with-java" class="alert-link">Getting Started with Java on Heroku</a> tutorial.
   </div>
-  <hr>
-  <div class="row">
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-info-sign"></span> How this sample app works</h3>
-      <ul>
-        <li>This app was deployed to Heroku, either using Git or by using <a href="https://github.com/heroku/java-getting-started">Heroku Button</a> on the repository.</li>
-
-        <li>When Heroku received the source code, it fetched all the dependencies in the <a href="https://github.com/heroku/java-getting-started/blob/master/pom.xml">pom.xml</a>, creating a slug.</li>
-        <li>The platform then spins up a dyno, a lightweight container that provides an isolated environment in which the slug can be mounted and executed.</li>
-        <li>You can scale your app, manage it, and deploy over <a href="https://addons.heroku.com/">150 add-on services</a>, from the Dashboard or CLI.</li>
-      </ul>
-    </div>
-    <div class="col-md-6">
-      <h3><span class="glyphicon glyphicon-link"></span> Next Steps</h3>
-      <ul>
-        <li>If you are following the <a href="https://devcenter.heroku.com/articles/getting-started-with-java">Getting Started</a> guide, then please head back to the tutorial and follow the next steps!</li>
-        <li>If you deployed this app by deploying the Heroku Button, then in a command line shell, run:</li>
-        <ul>
-          <li><code>git clone https://github.com/heroku/java-getting-started.git</code> - this will create a local copy of the source code for the app</li>
-          <li><code>cd java-getting-started</code> - change directory into the local source code repository</li>
-          <li><code>heroku git:remote -a &lt;your-app-name></code> - associate the Heroku app with the repository</li>
-          <li>You'll now be set up to run the app locally, or <a href="https://devcenter.heroku.com/articles/getting-started-with-java#push-local-changes">deploy changes</a> to Heroku</li>
-        </ul>
-      </ul>
-      <h3><span class="glyphicon glyphicon-link"></span> Helpful Links</h3>
-      <ul>
-        <li><a href="https://www.heroku.com/home">Heroku</a></li>
-        <li><a href="https://devcenter.heroku.com/">Heroku Dev Center</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/getting-started-with-java">Getting Started with Java on Heroku</a></li>
-        <li><a href="https://devcenter.heroku.com/articles/deploying-java">Deploying Java Apps on Heroku</a></li>
-      </ul>
-    </div>
-  </div> <!-- row -->
-   <div class="alert alert-info text-center" role="alert">
-    Please do work through the Getting Started guide, even if you do know how to build such an application.  The guide covers the basics of working with Heroku, and will familiarize you with all the concepts you need in order to build and deploy your own apps.
+  th:switch="${#lists.isEmpty(records)}"
+  <hr> -->
+  <div class="row" th:switch="${logged}">
+	
+    <table class="table" th:case="'1'">
+	  <span th:switch="${#lists.isEmpty(records)}">
+		  <span th:case="true">
+			<h3> No Records Available </h3>
+		  </span>
+		  <span th:case="*">
+			<thead>
+			  <tr>
+				<th scope="col">Action</th>
+				<th scope="col">Timestamp</th>
+			  </tr>
+			</thead>
+			<tbody>
+			  <tr th:each="record : ${records}">
+				<td><span th:text="${record.action}"> Title </span></td>
+				<td><span th:text="${record.timestamp}"> Author </span></td>
+			  </tr>
+			</tbody>
+		  </span>
+	  </span>
+	</table>
+	
+	<div class="alert alert-info text-center" role="alert" th:case="*">
+    To deploy your own copy, and learn the fundamentals of the Heroku platform, head over to the <a href="https://devcenter.heroku.com/articles/getting-started-with-java" class="alert-link">Getting Started with Java on Heroku</a> tutorial.
+	</div>
   </div>
 </div>
 
@@ -95,7 +91,7 @@ function clockIn() {
   };
   xhttp.open("POST", "/record", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhttp.send("action=clockIn");
+  xhttp.send("action=Clock_In");
 }
 
 function clockOut() {
@@ -107,7 +103,7 @@ function clockOut() {
   };
   xhttp.open("POST", "/record", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhttp.send("action=clockOut");
+  xhttp.send("action=Clock_Out");
 }
 
 function lunchIn() {
@@ -119,7 +115,7 @@ function lunchIn() {
   };
   xhttp.open("POST", "/record", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhttp.send("action=lunchIn");
+  xhttp.send("action=Lunch_In");
 }
 
 function lunchOut() {
@@ -131,7 +127,7 @@ function lunchOut() {
   };
   xhttp.open("POST", "/record", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhttp.send("action=lunchOut");
+  xhttp.send("action=Lunch_Out");
 }
 </script>
 

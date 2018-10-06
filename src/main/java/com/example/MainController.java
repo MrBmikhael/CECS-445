@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import javax.servlet.http.*;
 
 import com.example.database;
+import com.example.record;
 
 @Controller
 public class MainController {
@@ -57,6 +58,29 @@ public class MainController {
 				System.out.println(ele + ":" + request.getSession().getAttribute(ele));
 				model.put(ele, request.getSession().getAttribute(ele));
 			}
+			
+			try (Connection connection = database.getDataSource().getConnection()) {
+				Statement stmt = connection.createStatement();
+				String Username = request.getSession().getAttribute("user").toString();
+				String UserID = database.getUserID(Username).toString();
+				ResultSet rs = stmt.executeQuery("SELECT * FROM timesheet WHERE USER_ID='" + UserID + "' ORDER BY TIMESTAMP asc LIMIT 15");
+
+				ArrayList<record> output = new ArrayList<record>();
+				while (rs.next()) {
+					//output.add("<td>" + rs.getObject("ACTION").toString().replace("_"," ") + "</td><td>" + rs.getObject("TIMESTAMP") + "</td>");
+					record a = new record();
+					a.action = rs.getObject("ACTION").toString().replace("_"," ");
+					a.timestamp = rs.getObject("TIMESTAMP").toString();
+					output.add(a);
+				}
+				
+				// System.out.println(output.length);
+
+				model.put("records", output);
+			} catch (Exception e) {
+				model.put("message", e.getMessage());
+			}
+			
 		}
 		
 		return "index";
@@ -79,7 +103,7 @@ public class MainController {
 
 			ArrayList<String> output = new ArrayList<String>();
 			while (rs.next()) {
-				output.add("Read from DB: " + rs.getObject("USER_ID") + " | " + rs.getObject("ACTION") + " | " + rs.getObject("TIMESTAMP"));
+				output.add("Read from DB: " + rs.getObject("USER_ID") + " | " + rs.getObject("ACTION").toString().replace("_"," ") + " | " + rs.getObject("TIMESTAMP"));
 			}
 
 			model.put("records", output);
