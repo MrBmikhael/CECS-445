@@ -21,8 +21,8 @@
 			
 			<button class="btn btn-lg btn-default" onclick="clockIn()"><span class="glyphicon glyphicon-time"></span> Clock In </button>
 			<button class="btn btn-lg btn-default" onclick="clockOut()"><span class="glyphicon glyphicon-time"></span> Clock Out </button>
-			<button class="btn btn-lg btn-default"  onclick="lunchIn()"><span class="glyphicon glyphicon-cutlery"></span> Lunch In </button>
-			<button class="btn btn-lg btn-default"  onclick="lunchOut()"><span class="glyphicon glyphicon-cutlery"></span> Lunch Out </button>
+			<button class="btn btn-lg btn-default"  onclick="lunchStart()"><span class="glyphicon glyphicon-cutlery"></span> Lunch Start </button>
+			<button class="btn btn-lg btn-default"  onclick="lunchEnd()"><span class="glyphicon glyphicon-cutlery"></span> Lunch End </button>
 		</span>
 		<span th:case="*">
 			<h1>Welcome</h1>
@@ -57,8 +57,8 @@
 			</thead>
 			<tbody>
 			  <tr th:each="record : ${records}">
-				<td><span th:text="${record.action}"> Title </span></td>
-				<td><span th:text="${record.timestamp}"> Author </span></td>
+				<td><span th:text="${record.action}"></span></td>
+				<td><span th:text="${record.timestamp}"></span></td>
 			  </tr>
 			</tbody>
 		  </span>
@@ -72,10 +72,6 @@
 </div>
 
 <script>
-
-function loadToday() {
-  return "";
-}
 
 function recordCallback(data) {
   $('#recordAlertMessage')[0].innerHTML = data;
@@ -106,7 +102,7 @@ function clockOut() {
   xhttp.send("action=Clock_Out");
 }
 
-function lunchIn() {
+function lunchStart() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -115,10 +111,10 @@ function lunchIn() {
   };
   xhttp.open("POST", "/record", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhttp.send("action=Lunch_In");
+  xhttp.send("action=Lunch_Start");
 }
 
-function lunchOut() {
+function lunchEnd() {
   var xhttp = new XMLHttpRequest();
   xhttp.onreadystatechange = function() {
     if (this.readyState == 4 && this.status == 200) {
@@ -127,7 +123,7 @@ function lunchOut() {
   };
   xhttp.open("POST", "/record", true);
   xhttp.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
-  xhttp.send("action=Lunch_Out");
+  xhttp.send("action=Lunch_End");
 }
 </script>
 

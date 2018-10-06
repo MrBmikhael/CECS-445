@@ -67,14 +67,11 @@ public class MainController {
 
 				ArrayList<record> output = new ArrayList<record>();
 				while (rs.next()) {
-					//output.add("<td>" + rs.getObject("ACTION").toString().replace("_"," ") + "</td><td>" + rs.getObject("TIMESTAMP") + "</td>");
 					record a = new record();
 					a.action = rs.getObject("ACTION").toString().replace("_"," ");
 					a.timestamp = rs.getObject("TIMESTAMP").toString();
 					output.add(a);
 				}
-				
-				// System.out.println(output.length);
 
 				model.put("records", output);
 			} catch (Exception e) {

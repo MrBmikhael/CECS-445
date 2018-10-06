@@ -49,7 +49,7 @@ public class database {
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='" + Username + "'");
 			rs.next();
 			String UserID = rs.getObject("ID").toString();
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', '" + Action + "', now())");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', '" + Action + "', now() AT TIME ZONE 'America/Los_Angeles')");
 			
 			return true;
 		} catch (Exception e) {
