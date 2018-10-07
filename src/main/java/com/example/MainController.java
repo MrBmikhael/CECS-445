@@ -91,6 +91,26 @@ public class MainController {
 		else
 			return "Error adding record to database!";
 	}
+	
+	@RequestMapping(value = "/timesheet", method = RequestMethod.GET)
+	String timesheet(Map<String, Object> model, HttpServletRequest request) {
+		if (!request.getSession().isNew())
+		{
+			Enumeration attributes = request.getSession().getAttributeNames();
+			while(attributes.hasMoreElements())
+			{
+				String ele = attributes.nextElement().toString();
+				System.out.println(ele + ":" + request.getSession().getAttribute(ele));
+				model.put(ele, request.getSession().getAttribute(ele));
+			}
+			
+			return "timesheet";
+		}
+		else
+		{
+			return "redirect:/";
+		}
+	}
   
     @RequestMapping(value = "/view", method = RequestMethod.GET)
 	String view(Map<String, Object> model) {

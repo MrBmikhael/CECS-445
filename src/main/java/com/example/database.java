@@ -76,10 +76,6 @@ public class database {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='" + username + "'");
 			rs.next();
-			
-			System.out.println(rs.getObject("ID"));
-			System.out.println(rs.getObject("USERNAME"));
-			System.out.println(rs.getObject("PASSWORD"));
 
 			return (rs.getString("PASSWORD").equals(password));
 			

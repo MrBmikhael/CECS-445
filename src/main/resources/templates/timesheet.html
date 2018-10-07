@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'index')}">
+
+<body>
+
+<div class="jumbotron text-center">
+  <div class="container">
+    <a href="/" class="lang-logo">
+      <img src="/lang-logo.png">
+    </a>
+	
+	<span th:switch="${logged}">
+		<span th:case="'1'">
+			<h1>Timesheet</h1>
+		</span>
+		<span th:case="*">
+			<meta http-equiv="refresh" content="0; URL='/'" />
+		</span>
+	</span>
+  </div>
+</div>
+
+<div class="container">
+  <div class="row">
+  
+	<table class="table table-striped">
+	  <thead>
+		<tr>
+			<th scope="col">Date</th>
+			<th scope="col">Clock In</th>
+			<th scope="col">Clock Out</th>
+			<th scope="col">Lunch Start</th>
+			<th scope="col">Lunch End</th>
+			<th scope="col">Hours Worked</th>
+		</tr>
+	  </thead>
+	  <tbody>
+		<tr><th scope="row">1</th><td>Mark</td><td>Otto</td><td>@mdo</td><td>@mdo</td><td>@mdo</td></tr>
+	  </tbody>
+	</table>
+	
+  </div>
+</div>
+
+</body>
+</html>

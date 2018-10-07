@@ -11,7 +11,7 @@
 	
 	<span th:switch="${logged}">
 		<span th:case="'1'">
-			<h1>Welcome <br><span th:text="${user}" /></h1>
+			<h1>Welcome, <span th:text="${user}" /></h1>
 			<p id="time"></p>
 			
 			<div class="alert alert-success alert-dismissable" style="display: none;" id="record_status">
@@ -65,8 +65,11 @@
 	  </span>
 	</table>
 	
-	<div class="alert alert-info text-center" role="alert" th:case="*">
+	<!--<div class="alert alert-info text-center" role="alert" th:case="*">
     To deploy your own copy, and learn the fundamentals of the Heroku platform, head over to the <a href="https://devcenter.heroku.com/articles/getting-started-with-java" class="alert-link">Getting Started with Java on Heroku</a> tutorial.
+	</div>-->
+	<div class="alert alert-info text-center" role="alert" th:case="*">
+		Please login to manage your account!
 	</div>
   </div>
 </div>
