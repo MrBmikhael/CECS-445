@@ -30,6 +30,7 @@ public class LoginController {
 				System.out.println("Login OK!");
 				request.getSession().setAttribute("user", loginBean.getUsername());
 				request.getSession().setAttribute("logged", "1");
+				request.getSession().setAttribute("fullename", database.getUserFullName(loginBean.getUsername()));
                 return "redirect:/";
             } else {
                 model.addAttribute("error_msg", "Invalid Details");

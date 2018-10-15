@@ -70,6 +70,18 @@ public class database {
 		}
 	}
 	
+	public static String getUserFullName(String username) {
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();		
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='" + username + "'");
+			rs.next();
+
+			return rs.getString("FULLNAME");
+		} catch (Exception e) {
+			return "";
+		}
+	}
+	
 	public static boolean checkLogin(String username, String password)
 	{
 		try (Connection connection = database.getDataSource().getConnection()) {

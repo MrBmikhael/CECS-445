@@ -11,7 +11,7 @@
 	
 	<span th:switch="${logged}">
 		<span th:case="'1'">
-			<h1>Welcome, <span th:text="${user}" /></h1>
+			<h2>Welcome, <span th:text="${fullename}" /></h2>
 			<p id="time"></p>
 			
 			<div class="alert alert-success alert-dismissable" style="display: none;" id="record_status">
