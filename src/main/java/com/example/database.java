@@ -170,7 +170,7 @@ public class database {
 			DataSource ds = new HikariDataSource(config);
 			try (Connection connection = ds.getConnection()) {
 				Statement stmt = connection.createStatement();
-				stmt.executeQuery("SET TIME ZONE 'PST';");
+				stmt.executeQuery("SET TIME ZONE 'America/Los_Angeles';");
 			}
 			catch (Exception e) {}
 			return ds;
@@ -184,7 +184,7 @@ public class database {
 			DataSource ds = new HikariDataSource(config);
 			try (Connection connection = ds.getConnection()) {
 				Statement stmt = connection.createStatement();
-				stmt.executeQuery("SET TIME ZONE 'PST';");
+				stmt.executeQuery("SET TIME ZONE 'America/Los_Angeles';");
 			}
 			catch (Exception e) {}
 			return ds;
