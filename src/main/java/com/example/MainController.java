@@ -14,6 +14,9 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.concurrent.TimeUnit;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -105,8 +108,23 @@ public class MainController {
 			}
 			
 			day[] week = database.getWeekTimesheet(request.getSession().getAttribute("user").toString());
+			
+			double totalHours = 0.0;
+			SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+			
+			for (int i = 0; i < 7; i++)
+			{
+				try {
+				Date hours = format.parse(week[i].Total_Hours);
+				int h = hours.getHours();
+				double m = (hours.getMinutes()/60.00);
+				totalHours += (h + m);
+				}
+				catch (Exception e) {}
+			}
 
 			model.put("week", week);
+			model.put("totalHours", totalHours);
 			
 			return "timesheet";
 		}
