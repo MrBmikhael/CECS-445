@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.boot.builder.SpringApplicationBuilder;
 
+import java.util.concurrent.TimeUnit;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -20,6 +23,8 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.Map;
+
+import com.example.day;
 
 public class database {
 
@@ -41,6 +46,61 @@ public class database {
 		}
   
         return single_instance;
+	}
+	
+	public static day[] getWeekTimesheet(String Username) {
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='" + Username + "'");
+			rs.next();
+			String UserID = rs.getObject("ID").toString();
+			
+			day[] weekData = new day[7];
+			
+			System.out.println("Getting last week timesheet ...");
+			
+			// AND TIMESTAMP BETWEEN (CURRENT_DATE - interval '7 day') AND CURRENT_DATE
+			ResultSet rss = stmt.executeQuery("SELECT * FROM timesheet WHERE USER_ID='" + UserID + "' AND TIMESTAMP BETWEEN (CURRENT_DATE - interval '7 day') AND CURRENT_DATE ORDER BY TIMESTAMP desc;");
+			
+			SimpleDateFormat format = new SimpleDateFormat("HH:mm");
+			
+			for (int i = 0; i < 7; i++) {
+				weekData[i] = new day();
+				
+				rss.next();
+				weekData[i].Clock_Out = rss.getString("TIMESTAMP").split(" ")[1];
+				
+				rss.next();
+				weekData[i].Lunch_End = rss.getString("TIMESTAMP").split(" ")[1];
+				
+				rss.next();
+				weekData[i].Lunch_Start = rss.getString("TIMESTAMP").split(" ")[1];
+				
+				rss.next();
+				weekData[i].Clock_In = rss.getString("TIMESTAMP").split(" ")[1];
+				
+				weekData[i].Date = rss.getString("TIMESTAMP").split(" ")[0];
+
+				Date cin = format.parse(weekData[i].Clock_In);
+				Date cout = format.parse(weekData[i].Clock_Out);
+				long difference = cout.getTime() - cin.getTime();
+				
+				Date lunchStart = format.parse(weekData[i].Lunch_Start);
+				Date lunchEnd = format.parse(weekData[i].Lunch_End);
+				difference = difference - (lunchEnd.getTime() - lunchStart.getTime());
+				
+				weekData[i].Total_Hours = String.format("%02d:%02d", TimeUnit.MILLISECONDS.toHours(difference),
+				  TimeUnit.MILLISECONDS.toMinutes(difference) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(difference)));
+
+				// System.out.println("DAY DATA: Clock IN: " + weekData[i].Clock_In + " - Lunch Start: " + weekData[i].Lunch_Start + " - Lunch End: " 
+				//  + weekData[i].Lunch_End + " - Clock Out: " + weekData[i].Clock_Out + " - Hours Worked: " + weekData[i].Total_Hours);
+			}
+			
+			return weekData;
+		} catch (Exception e) {
+			System.out.println("ERROR: " + e);
+			return null;
+		}		
 	}
 	
 	public static boolean addRecordForUser(String Username, String Action) {

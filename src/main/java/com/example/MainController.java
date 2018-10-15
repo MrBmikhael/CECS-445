@@ -104,24 +104,9 @@ public class MainController {
 				model.put(ele, request.getSession().getAttribute(ele));
 			}
 			
-			try (Connection connection = database.getDataSource().getConnection()) {
-				Statement stmt = connection.createStatement();
-				String Username = request.getSession().getAttribute("user").toString();
-				String UserID = database.getUserID(Username).toString();
-				ResultSet rs = stmt.executeQuery("SELECT * FROM timesheet WHERE USER_ID='" + UserID + "' ORDER BY TIMESTAMP desc LIMIT 15");
+			day[] week = database.getWeekTimesheet(request.getSession().getAttribute("user").toString());
 
-				ArrayList<record> output = new ArrayList<record>();
-				while (rs.next()) {
-					record a = new record();
-					a.action = rs.getObject("ACTION").toString().replace("_"," ");
-					a.timestamp = rs.getObject("TIMESTAMP").toString();
-					output.add(a);
-				}
-
-				model.put("records", output);
-			} catch (Exception e) {
-				model.put("message", e.getMessage());
-			}
+			model.put("week", week);
 			
 			return "timesheet";
 		}
@@ -229,25 +214,31 @@ public class MainController {
 			ResultSet rss = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='bishoy.mikhael'");
 			rss.next();
 			String UserID = rss.getObject("ID").toString();
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-10 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-10 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-10 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-10 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
 			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-11 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-11 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-11 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-11 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-14 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-14 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-14 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-14 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
+			
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-13 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-13 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-13 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-13 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
 			
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-12 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-12 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-12 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-12 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
 			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-13 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-13 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-13 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-13 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-11 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-11 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-11 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-11 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
+			
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-10 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-10 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-10 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-10 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
 			
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-09 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-09 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
@@ -269,10 +260,10 @@ public class MainController {
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-06 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-06 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
 			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-14 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-14 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-14 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-14 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-05 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-05 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-05 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-05 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
 
 			ArrayList<String> output = new ArrayList<String>();
 			while (rs.next()) {
