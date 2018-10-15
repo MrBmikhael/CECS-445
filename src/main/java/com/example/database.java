@@ -167,7 +167,13 @@ public class database {
 			config.setJdbcUrl(url);
 			config.setUsername("aynswouxmwktev");
 			config.setPassword("a6e450bd67a99278ae791bc37b5755acb08c0e452476f1de8c97a1c4f28a372c");
-			return new HikariDataSource(config);
+			DataSource ds = new HikariDataSource(config);
+			try (Connection connection = ds.getConnection()) {
+				Statement stmt = connection.createStatement();
+				stmt.executeQuery("SET TIME ZONE 'PST';");
+			}
+			catch (Exception e) {}
+			return ds;
 		} else {
 			System.out.println("================================================================================");
 			System.out.println("Found dbUrl!");
@@ -175,7 +181,13 @@ public class database {
 			System.out.println("================================================================================");
 			HikariConfig config = new HikariConfig();
 			config.setJdbcUrl(dbUrl);
-			return new HikariDataSource(config);
+			DataSource ds = new HikariDataSource(config);
+			try (Connection connection = ds.getConnection()) {
+				Statement stmt = connection.createStatement();
+				stmt.executeQuery("SET TIME ZONE 'PST';");
+			}
+			catch (Exception e) {}
+			return ds;
 		}
 	}
 }
