@@ -66,7 +66,7 @@ public class MainController {
 				Statement stmt = connection.createStatement();
 				String Username = request.getSession().getAttribute("user").toString();
 				String UserID = database.getUserID(Username).toString();
-				ResultSet rs = stmt.executeQuery("SELECT * FROM timesheet WHERE USER_ID='" + UserID + "' AND TIMESTAMP >= current_date ORDER BY TIMESTAMP desc");
+				ResultSet rs = stmt.executeQuery("SELECT * FROM timesheet WHERE USER_ID='" + UserID + "' AND TIMESTAMP >= current_date ORDER BY TIMESTAMP desc LIMIT 4");
 
 				ArrayList<record> output = new ArrayList<record>();
 				while (rs.next()) {
