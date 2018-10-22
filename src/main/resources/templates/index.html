@@ -2,15 +2,30 @@
 <html xmlns:th="http://www.thymeleaf.org" th:replace="~{fragments/layout :: layout (~{::body},'index')}">
 
 <body>
-
+<div class="jumbotron"> 
 <div class="jumbotron text-center">
   <div class="container">
-    <a href="/" class="lang-logo">
-      <img src="/lang-logo.png">
-    </a>
-	
+<!--    <a href="/" class="lang-logo">-->
+      <img src="/logo.png" height="400px" width="600px">
+<!--    </a>-->
+
+<!--
+<form>
+    <div class="form-group">
+        <label class="sr-only" for="username">Username</label>
+        <input class="form-control" name="username" placeholder="Username" type="text">
+    </div>
+    <div class="form-group">
+        <label class="sr-only" for="password">Password</label>
+        <input class="form-control" name="password" placeholder="Password" type="password">
+    </div>
+    <button type="submit" class="btn btn-default">Login</button>
+</form>
+-->
+      
 	<span th:switch="${logged}">
 		<span th:case="'1'">
+<!--            if logged in displayes welcome and name of user-->
 			<h2>Welcome, <span th:text="${fullename}" /></h2>
 			<p id="time"></p>
 			
@@ -19,17 +34,13 @@
 				<span id="recordAlertMessage">Success! message sent successfully.</span>
 			</div>
 			
-			<button class="btn btn-lg btn-default" onclick="clockIn()"><span class="glyphicon glyphicon-time"></span> Clock In </button>
-			<button class="btn btn-lg btn-default" onclick="clockOut()"><span class="glyphicon glyphicon-time"></span> Clock Out </button>
-			<button class="btn btn-lg btn-default"  onclick="lunchStart()"><span class="glyphicon glyphicon-cutlery"></span> Lunch Start </button>
-			<button class="btn btn-lg btn-default"  onclick="lunchEnd()"><span class="glyphicon glyphicon-cutlery"></span> Lunch End </button>
+			<button class="btn btn-lg btn-primary" onclick="clockIn()"><span class="glyphicon glyphicon-time"></span> Clock In </button>
+			<button class="btn btn-lg btn-primary" onclick="clockOut()"><span class="glyphicon glyphicon-time"></span> Clock Out </button>
+			<button class="btn btn-lg btn-primary"  onclick="lunchStart()"><span class="glyphicon glyphicon-cutlery"></span> Lunch Start </button>
+			<button class="btn btn-lg btn-primary"  onclick="lunchEnd()"><span class="glyphicon glyphicon-cutlery"></span> Lunch End </button>
 		</span>
 		<span th:case="*">
 			<h1>Welcome</h1>
-			<!-- <p>This is a sample Java application deployed to Heroku. It's a reasonably simple app - but a good foundation for understanding how to get the most out of the Heroku platform.</p>
-			<a type="button" class="btn btn-lg btn-default" href="https://devcenter.heroku.com/articles/getting-started-with-java"><span class="glyphicon glyphicon-flash"></span> Getting Started with Java</a>
-			<a type="button" class="btn btn-lg btn-primary" href="https://github.com/heroku/java-getting-started"><span class="glyphicon glyphicon-download"></span> Source on GitHub</a>
-			-->
 		</span>
 	</span>
   </div>
@@ -129,6 +140,7 @@ function lunchEnd() {
   xhttp.send("action=Lunch_End");
 }
 </script>
-
+    
+</div>
 </body>
 </html>

@@ -14,8 +14,19 @@
 </head>
 
 <body onload="startTime()">
-    <nav class="navbar navbar-default navbar-static-top navbar-inverse">
-        <div class="container">
+<!--    <nav class="navbar navbar-default navbar-static-top navbar-inverse">-->
+    <nav class="navbar navbar-trans navbar-inverse">
+        <div class="container-fluid">
+        <div class="navbar-header">
+          <button type="button" class="navbar-toggle" data-toggle="collapse" data-target="#myNavbar">
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>
+            <span class="icon-bar"></span>   
+          </button>
+        <img src="/logo.png" height="60px" width="200px">
+        </div>
+        <div class="collapse navbar-collapse" id="myNavbar">
+<!--        <div class="container">-->
             <ul class="nav navbar-nav">
                 <li class="active">
                     <a href="/"><span class="glyphicon glyphicon-home"></span> Home</a>
@@ -35,6 +46,7 @@
 			<form th:case="'1'" class="navbar-form navbar-right form-inline" method="POST" action="/logout">
 				<button type="submit" class="btn btn-default">Logout</button>
 			</form>
+<!--                if not logged in then show the log in form -->
 			<form th:case="*" class="navbar-form navbar-right form-inline" method="POST" action="/login">
 				<div class="form-group">
 					<label class="sr-only" for="username">Username</label>
@@ -47,6 +59,7 @@
 				<button type="submit" class="btn btn-default">Login</button>
 			</form>
 			</div>
+        </div>
         </div>
     </nav>
 	
