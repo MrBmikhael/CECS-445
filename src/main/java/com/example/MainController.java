@@ -191,19 +191,26 @@ public class MainController {
   
 	@RequestMapping(value = "/setup", method = RequestMethod.GET)
 	String setup(Map<String, Object> model) {
+		System.out.println("Starting Setup ...");
 		try (Connection connection = database.getDataSource().getConnection()) {
 			Statement stmt = connection.createStatement();
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, FULLNAME TEXT NOT NULL, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL)");
-			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD) VALUES ('admin', 'admin', 'admin') ON CONFLICT DO NOTHING");
-			ResultSet rs = stmt.executeQuery("SELECT * FROM users");
-			
-			stmt = connection.createStatement();
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS departments (ID SERIAL PRIMARY KEY, NAME TEXT NOT NULL)");
+			stmt.executeUpdate("INSERT INTO departments (NAME) VALUES ('HR') ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, FULLNAME TEXT NOT NULL, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL, DEPARTMENT INTEGER REFERENCES departments(ID))");
+			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('admin', 'admin', 'admin', 1) ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS managers (ID SERIAL PRIMARY KEY, DEPARTMENT_ID INTEGER REFERENCES departments(ID), MANAGER_ID INTEGER REFERENCES users(ID))");
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_balances (ID SERIAL PRIMARY KEY, PTO_BALANCE INTEGER NOT NULL, EMPLOYEE_ID INTEGER REFERENCES users(ID))");
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_requests (ID SERIAL PRIMARY KEY, HOURS INTEGER NOT NULL, EMPLOYEE INTEGER REFERENCES users(ID) NOT NULL, REQUESTDATE DATE NOT NULL)");
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS timesheet (ID SERIAL, USER_ID INTEGER NOT NULL REFERENCES users(ID), ACTION TEXT NOT NULL, TIMESTAMP timestamp NOT NULL, PRIMARY KEY (ID,USER_ID))");
+
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users");
 
 			ArrayList<String> output = new ArrayList<String>();
 			while (rs.next()) {
-				output.add("Read from DB: " + rs.getObject("FULLNAME") + "<br>" + rs.getObject("USERNAME") + " / " + rs.getObject("PASSWORD"));
+				output.add("Read from DB: " + rs.getObject("FULLNAME") + " - " + rs.getObject("USERNAME") + " / " + rs.getObject("PASSWORD") + " - " + rs.getObject("DEPARTMENT"));
 			}
+
+			System.out.println("Setup Complete!");
 
 			model.put("records", output);
 			return "db";
@@ -215,11 +222,27 @@ public class MainController {
 	
 	@RequestMapping(value = "/demo", method = RequestMethod.GET)
 	String demo(Map<String, Object> model) {
+		System.out.println("Starting Demo ...");
 		try (Connection connection = database.getDataSource().getConnection()) {
 			Statement stmt = connection.createStatement();
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, FULLNAME TEXT NOT NULL, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL)");
-			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD) VALUES ('admin', 'admin', 'admin') ON CONFLICT DO NOTHING");
-			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD) VALUES ('Bishoy Mikhael', 'bishoy.mikhael', '123456') ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS departments (ID SERIAL PRIMARY KEY, NAME TEXT NOT NULL)");
+			stmt.executeUpdate("INSERT INTO departments (NAME) VALUES ('HR') ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("INSERT INTO departments (NAME) VALUES ('Development') ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("INSERT INTO departments (NAME) VALUES ('Quality Assurance') ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("INSERT INTO departments (NAME) VALUES ('Support') ON CONFLICT DO NOTHING");
+
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, FULLNAME TEXT NOT NULL, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL, DEPARTMENT INTEGER REFERENCES departments(ID))");
+			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('admin', 'admin', 'admin', 1) ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('Bishoy Mikhael', 'bishoy.mikhael', '123456', 2) ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('John Doe', 'john.doe', '123456', 2) ON CONFLICT DO NOTHING");
+
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS managers (ID SERIAL PRIMARY KEY, DEPARTMENT_ID INTEGER REFERENCES departments(ID), MANAGER_ID INTEGER REFERENCES users(ID))");
+			stmt.executeUpdate("INSERT INTO managers (DEPARTMENT_ID, MANAGER_ID) VALUES (2, 2) ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("INSERT INTO managers (DEPARTMENT_ID, MANAGER_ID) VALUES (1, 1) ON CONFLICT DO NOTHING");
+			
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_balances (ID SERIAL PRIMARY KEY, PTO_BALANCE INTEGER NOT NULL, EMPLOYEE_ID INTEGER REFERENCES users(ID))");
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_requests (ID SERIAL PRIMARY KEY, HOURS INTEGER NOT NULL, EMPLOYEE INTEGER REFERENCES users(ID) NOT NULL, REQUESTDATE DATE NOT NULL)");
+
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users");
 			
 			stmt = connection.createStatement();
@@ -234,55 +257,12 @@ public class MainController {
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-14 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-14 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
 			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-13 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-13 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-13 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-13 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
-			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-12 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-12 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-12 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-12 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
-			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-11 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-11 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-11 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-11 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
-			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-10 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-10 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-10 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-10 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
-			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-09 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-09 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-09 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-09 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
-			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-08 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-08 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-08 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-08 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
-			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-07 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-07 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-07 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-07 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
-			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-06 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-06 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-06 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-06 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
-			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-05 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-05 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-05 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-05 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
-
 			ArrayList<String> output = new ArrayList<String>();
 			while (rs.next()) {
 				output.add("Read from DB: " + rs.getObject("FULLNAME") + "<br>" + rs.getObject("USERNAME") + " / " + rs.getObject("PASSWORD"));
 			}
+
+			System.out.println("Demo Complete!");
 
 			model.put("records", output);
 			return "db";

@@ -3,27 +3,29 @@
 
 <body>
 
-<div class="jumbotron text-center">
-  <div class="container">
-    <a href="/" class="lang-logo">
-      <img src="/lang-logo.png">
-    </a>
-	
-	<span th:switch="${logged}">
-		<span th:case="'1'">
-			<h1>Request Paid Time Off</h1>
+	<div class="jumbotron text-center">
+		<div class="container">
+			<a href="/">
+				<img src="/logo.png">
+			</a>
+		
+		<span th:switch="${logged}">
+			<span th:case="'1'">
+				<h1>Request Paid Time Off</h1>
+			</span>
+			<span th:case="*">
+				<meta http-equiv="refresh" content="0; URL='/'" />
+			</span>
 		</span>
-		<span th:case="*">
-			<meta http-equiv="refresh" content="0; URL='/'" />
-		</span>
-	</span>
-  </div>
-</div>
+		</div>
+	</div>
 
-<div class="container">
-  <div class="row">
-  </div>
-</div>
+  <div class="container">
+		<div class="row">
+			<div class="col-md-9" style="border: 2px; border-color:lightsteelblue;"> <p>Date: 11/23/2018 <br>Hours: 8</p> </div>
+			<div class="col-md-3" style="border: 2px; border-color:lightsteelblue;">Balance: 40 Hours</div>
+		</div>
+	</div>
 
 </body>
 </html>
