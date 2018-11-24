@@ -22,8 +22,63 @@
 
   <div class="container">
 		<div class="row">
-			<div class="col-md-9" style="border: 2px; border-color:lightsteelblue;"> <p>Date: 11/23/2018 <br>Hours: 8</p> </div>
-			<div class="col-md-3" style="border: 2px; border-color:lightsteelblue;">Balance: 40 Hours</div>
+			<div class="col-md-10">
+				<div class="panel panel-primary">
+					<div class="panel-heading"><strong>Submit PTO Request</strong></div>
+					<div class="panel-body">
+						<div class="form-row">
+							<form>
+								<div class="form-group col-md-6">
+									<label for="pto_reason">PTO Reason</label>
+									<input type="text" class="form-control" placeholder="Enter reason" id="pto_reason">
+								</div>
+								<div class="form-group col-md-4">
+									<label for="pto_date">Date</label>
+
+									<div class='input-group date' id='datepicker'>
+										<input type='text' class="form-control" />
+										<span class="input-group-addon">
+											<span class="glyphicon glyphicon-calendar"></span>
+										</span>
+									</div>
+									<script type="text/javascript">
+										$(function () {
+											$('#datepicker').datetimepicker();
+										});
+									</script>
+									
+								</div>
+								<div class="form-group col-md-2">
+									<label for="inputHours">Hours</label>
+									<select id="inputHours" class="form-control">
+										<option>1</option>
+										<option>2</option>
+										<option>3</option>
+										<option>4</option>
+										<option>5</option>
+										<option>6</option>
+										<option>7</option>
+										<option selected>8</option>
+									</select>
+								</div>
+								<div class="col-md-2">
+									<button type="submit" class="btn btn-primary">Submit</button>
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+			<div class="col-md-2">
+				<div class="panel panel-primary">
+					<div class="panel-heading"><strong>Available Hours</strong></div>
+					<div class="panel-body">
+						<p>
+							<b>40 Hours</b>
+						</p>
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 

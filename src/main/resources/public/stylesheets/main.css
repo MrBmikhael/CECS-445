@@ -20,3 +20,13 @@
     
 .jumbotron .lang-logo img {
       max-width: 100%; }
+
+.tab {
+    margin: 5px;
+    padding: 5px;
+    border: 2px;
+    border: linear-gradient(#33ccff 50%, #3366ff 100%) 5px;
+    background-color: linear-gradient(#33ccff 50%, #3366ff 100%);
+    border-top-left-radius: 10px;
+    border-top-right-radius: 10px;
+}
