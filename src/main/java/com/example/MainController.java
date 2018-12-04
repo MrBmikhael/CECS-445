@@ -1,13 +1,6 @@
 
 package com.example;
 
-import com.zaxxer.hikari.HikariConfig;
-import com.zaxxer.hikari.HikariDataSource;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.SpringApplication;
-import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -54,7 +47,6 @@ public class MainController {
 			while(attributes.hasMoreElements())
 			{
 				String ele = attributes.nextElement().toString();
-				System.out.println(ele + ":" + request.getSession().getAttribute(ele));
 				model.put(ele, request.getSession().getAttribute(ele));
 			}
 			
@@ -99,22 +91,21 @@ public class MainController {
 			while(attributes.hasMoreElements())
 			{
 				String ele = attributes.nextElement().toString();
-				System.out.println(ele + ":" + request.getSession().getAttribute(ele));
 				model.put(ele, request.getSession().getAttribute(ele));
 			}
 			
-			day[] week = database.getWeekTimesheet(request.getSession().getAttribute("user").toString());
+			ArrayList<day> week = database.getWeekTimesheet(request.getSession().getAttribute("user").toString());
 			
 			double totalHours = 0.0;
 			SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 			
-			for (int i = 0; i < 7; i++)
+			for (int i = 0; i < week.size(); i++)
 			{
 				try {
-				Date hours = format.parse(week[i].Total_Hours);
-				int h = hours.getHours();
-				double m = (hours.getMinutes()/60.00);
-				totalHours += (h + m);
+					Date hours = format.parse(week.get(i).Total_Hours);
+					int h = hours.getHours();
+					double m = (hours.getMinutes()/60.00);
+					totalHours += (h + m);
 				}
 				catch (Exception e) {}
 			}
@@ -138,31 +129,11 @@ public class MainController {
 			while(attributes.hasMoreElements())
 			{
 				String ele = attributes.nextElement().toString();
-				System.out.println(ele + ":" + request.getSession().getAttribute(ele));
+				// System.out.println(ele + ":" + request.getSession().getAttribute(ele));
 				model.put(ele, request.getSession().getAttribute(ele));
 			}
 			
 			return "profile";
-		}
-		else
-		{
-			return "redirect:/";
-		}
-	}
-	
-	@RequestMapping(value = "/request", method = RequestMethod.GET)
-	String requestPTO(Map<String, Object> model, HttpServletRequest request) {
-		if (!request.getSession().isNew())
-		{
-			Enumeration attributes = request.getSession().getAttributeNames();
-			while(attributes.hasMoreElements())
-			{
-				String ele = attributes.nextElement().toString();
-				System.out.println(ele + ":" + request.getSession().getAttribute(ele));
-				model.put(ele, request.getSession().getAttribute(ele));
-			}
-			
-			return "request";
 		}
 		else
 		{
@@ -200,7 +171,7 @@ public class MainController {
 			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('admin', 'admin', 'admin', 1) ON CONFLICT DO NOTHING");
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS managers (ID SERIAL PRIMARY KEY, DEPARTMENT_ID INTEGER REFERENCES departments(ID), MANAGER_ID INTEGER REFERENCES users(ID))");
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_balances (ID SERIAL PRIMARY KEY, PTO_BALANCE INTEGER NOT NULL, EMPLOYEE_ID INTEGER REFERENCES users(ID))");
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_requests (ID SERIAL PRIMARY KEY, HOURS INTEGER NOT NULL, EMPLOYEE INTEGER REFERENCES users(ID) NOT NULL, REQUESTDATE DATE NOT NULL)");
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_requests (ID SERIAL PRIMARY KEY, HOURS INTEGER NOT NULL, EMPLOYEE INTEGER REFERENCES users(ID) NOT NULL, REQUESTDATE DATE NOT NULL, STATUS TEXT, REASON TEXT)");
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS timesheet (ID SERIAL, USER_ID INTEGER NOT NULL REFERENCES users(ID), ACTION TEXT NOT NULL, TIMESTAMP timestamp NOT NULL, PRIMARY KEY (ID,USER_ID))");
 
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users");
@@ -232,16 +203,16 @@ public class MainController {
 			stmt.executeUpdate("INSERT INTO departments (NAME) VALUES ('Support') ON CONFLICT DO NOTHING");
 
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS users (ID SERIAL PRIMARY KEY, FULLNAME TEXT NOT NULL, USERNAME TEXT UNIQUE NOT NULL, PASSWORD TEXT NOT NULL, DEPARTMENT INTEGER REFERENCES departments(ID))");
-			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('admin', 'admin', 'admin', 1) ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('Bryson Sherman', 'bryson.sherman', '123456', 1) ON CONFLICT DO NOTHING");
 			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('Bishoy Mikhael', 'bishoy.mikhael', '123456', 2) ON CONFLICT DO NOTHING");
-			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('John Doe', 'john.doe', '123456', 2) ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("INSERT INTO users (FULLNAME, USERNAME, PASSWORD, DEPARTMENT) VALUES ('Agaby Azer', 'agaby.azer', '123456', 2) ON CONFLICT DO NOTHING");
 
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS managers (ID SERIAL PRIMARY KEY, DEPARTMENT_ID INTEGER REFERENCES departments(ID), MANAGER_ID INTEGER REFERENCES users(ID))");
-			stmt.executeUpdate("INSERT INTO managers (DEPARTMENT_ID, MANAGER_ID) VALUES (2, 2) ON CONFLICT DO NOTHING");
+			stmt.executeUpdate("INSERT INTO managers (DEPARTMENT_ID, MANAGER_ID) VALUES (2, 3) ON CONFLICT DO NOTHING");
 			stmt.executeUpdate("INSERT INTO managers (DEPARTMENT_ID, MANAGER_ID) VALUES (1, 1) ON CONFLICT DO NOTHING");
 			
 			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_balances (ID SERIAL PRIMARY KEY, PTO_BALANCE INTEGER NOT NULL, EMPLOYEE_ID INTEGER REFERENCES users(ID))");
-			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_requests (ID SERIAL PRIMARY KEY, HOURS INTEGER NOT NULL, EMPLOYEE INTEGER REFERENCES users(ID) NOT NULL, REQUESTDATE DATE NOT NULL)");
+			stmt.executeUpdate("CREATE TABLE IF NOT EXISTS pto_requests (ID SERIAL PRIMARY KEY, HOURS INTEGER NOT NULL, EMPLOYEE INTEGER REFERENCES users(ID) NOT NULL, REQUESTDATE DATE NOT NULL, STATUS TEXT, REASON TEXT)");
 
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users");
 			
@@ -251,11 +222,16 @@ public class MainController {
 			ResultSet rss = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='bishoy.mikhael'");
 			rss.next();
 			String UserID = rss.getObject("ID").toString();
+
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-12-02 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-12-02 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-12-02 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-12-02 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
 			
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-10-14 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-10-14 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-10-14 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
-			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-10-14 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_In', '2018-12-01 07:00:38.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_Start', '2018-12-01 11:15:28.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Lunch_End', '2018-12-01 11:45:47.1234' AT TIME ZONE 'America/Los_Angeles')");
+			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', 'Clock_Out', '2018-12-01 15:30:42.1234' AT TIME ZONE 'America/Los_Angeles')");
 			
 			ArrayList<String> output = new ArrayList<String>();
 			while (rs.next()) {

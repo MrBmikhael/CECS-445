@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Map;
 
 import com.example.day;
+import com.example.request;
 
 public class database {
 
@@ -48,52 +49,54 @@ public class database {
         return single_instance;
 	}
 	
-	public static day[] getWeekTimesheet(String Username) {
+	public static ArrayList<day> getWeekTimesheet(String Username) {
 		try (Connection connection = database.getDataSource().getConnection()) {
 			Statement stmt = connection.createStatement();
 			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='" + Username + "'");
 			rs.next();
 			String UserID = rs.getObject("ID").toString();
 			
-			day[] weekData = new day[7];
+			ArrayList<day> weekData = new ArrayList<day>();
 			
 			System.out.println("Getting last week timesheet ...");
 			
 			// AND TIMESTAMP BETWEEN (CURRENT_DATE - interval '7 day') AND CURRENT_DATE
-			ResultSet rss = stmt.executeQuery("SELECT * FROM timesheet WHERE USER_ID='" + UserID + "' AND TIMESTAMP BETWEEN (CURRENT_DATE - interval '7 day') AND CURRENT_DATE ORDER BY TIMESTAMP desc;");
+			ResultSet rss = stmt.executeQuery("SELECT * FROM timesheet WHERE USER_ID='" + UserID + "' AND TIMESTAMP BETWEEN (CURRENT_DATE - interval '15 day') AND CURRENT_DATE ORDER BY TIMESTAMP desc;");
 			
 			SimpleDateFormat format = new SimpleDateFormat("HH:mm");
 			
-			for (int i = 0; i < 7; i++) {
-				weekData[i] = new day();
+			while (!rss.isLast()) {
+				day d = new day();
 				
 				rss.next();
-				weekData[i].Clock_Out = rss.getString("TIMESTAMP").split(" ")[1];
+				d.Clock_Out = rss.getString("TIMESTAMP").split(" ")[1];
 				
 				rss.next();
-				weekData[i].Lunch_End = rss.getString("TIMESTAMP").split(" ")[1];
+				d.Lunch_End = rss.getString("TIMESTAMP").split(" ")[1];
 				
 				rss.next();
-				weekData[i].Lunch_Start = rss.getString("TIMESTAMP").split(" ")[1];
+				d.Lunch_Start = rss.getString("TIMESTAMP").split(" ")[1];
 				
 				rss.next();
-				weekData[i].Clock_In = rss.getString("TIMESTAMP").split(" ")[1];
+				d.Clock_In = rss.getString("TIMESTAMP").split(" ")[1];
 				
-				weekData[i].Date = rss.getString("TIMESTAMP").split(" ")[0];
+				d.Date = rss.getString("TIMESTAMP").split(" ")[0];
 
-				Date cin = format.parse(weekData[i].Clock_In);
-				Date cout = format.parse(weekData[i].Clock_Out);
+				Date cin = format.parse(d.Clock_In);
+				Date cout = format.parse(d.Clock_Out);
 				long difference = cout.getTime() - cin.getTime();
 				
-				Date lunchStart = format.parse(weekData[i].Lunch_Start);
-				Date lunchEnd = format.parse(weekData[i].Lunch_End);
+				Date lunchStart = format.parse(d.Lunch_Start);
+				Date lunchEnd = format.parse(d.Lunch_End);
 				difference = difference - (lunchEnd.getTime() - lunchStart.getTime());
 				
-				weekData[i].Total_Hours = String.format("%02d:%02d", TimeUnit.MILLISECONDS.toHours(difference),
+				d.Total_Hours = String.format("%02d:%02d", TimeUnit.MILLISECONDS.toHours(difference),
 				  TimeUnit.MILLISECONDS.toMinutes(difference) - TimeUnit.HOURS.toMinutes(TimeUnit.MILLISECONDS.toHours(difference)));
 
-				// System.out.println("DAY DATA: Clock IN: " + weekData[i].Clock_In + " - Lunch Start: " + weekData[i].Lunch_Start + " - Lunch End: " 
-				//  + weekData[i].Lunch_End + " - Clock Out: " + weekData[i].Clock_Out + " - Hours Worked: " + weekData[i].Total_Hours);
+				weekData.add(d);
+
+				System.out.println("DAY DATA: Clock IN: " + d.Clock_In + " - Lunch Start: " + d.Lunch_Start + " - Lunch End: " 
+				  + d.Lunch_End + " - Clock Out: " + d.Clock_Out + " - Hours Worked: " + d.Total_Hours);
 			}
 			
 			return weekData;
@@ -102,7 +105,7 @@ public class database {
 			return null;
 		}		
 	}
-	
+
 	public static boolean addRecordForUser(String Username, String Action) {
 		try (Connection connection = database.getDataSource().getConnection()) {
 			Statement stmt = connection.createStatement();
@@ -110,6 +113,23 @@ public class database {
 			rs.next();
 			String UserID = rs.getObject("ID").toString();
 			stmt.executeUpdate("INSERT INTO timesheet (USER_ID, ACTION, TIMESTAMP) VALUES ('" + UserID + "', '" + Action + "', now() AT TIME ZONE 'America/Los_Angeles')");
+			
+			return true;
+		} catch (Exception e) {
+			System.out.println("ERROR: " + e);
+			return false;
+		}
+	}
+	
+	public static boolean addRequestForUser(String Username, String Reason, String date, String hours) {
+		// ID SERIAL PRIMARY KEY, HOURS INTEGER NOT NULL, EMPLOYEE INTEGER REFERENCES users(ID) NOT NULL, REQUESTDATE DATE NOT NULL, STATUS TEXT
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE USERNAME='" + Username + "'");
+			rs.next();
+			String UserID = rs.getObject("ID").toString();
+			System.out.println("INSERT INTO pto_requests (HOURS, EMPLOYEE, REQUESTDATE, STATUS, REASON) VALUES (" + hours + ", '" + UserID + "', '" + date + "', 'Pending', '"+Reason+"')");
+			stmt.executeUpdate("INSERT INTO pto_requests (HOURS, EMPLOYEE, REQUESTDATE, STATUS, REASON) VALUES (" + hours + ", '" + UserID + "', '" + date + "', 'Pending', '"+Reason+"')");
 			
 			return true;
 		} catch (Exception e) {
@@ -188,6 +208,108 @@ public class database {
 			}
 			catch (Exception e) {}
 			return ds;
+		}
+	}
+
+	public static boolean approveRequestById(String requestId)
+	{
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			stmt.executeUpdate("UPDATE pto_requests SET STATUS='Approved' WHERE ID='" + requestId + "'");
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
+
+	public static boolean denyRequestById(String requestId)
+	{
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			stmt.executeUpdate("UPDATE pto_requests SET STATUS='Denied' WHERE ID='" + requestId + "'");
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
+
+	public static boolean isManage(String userId)
+	{
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM MANAGERS WHERE MANAGER_ID='" + userId + "'");
+			
+			while (rs.next())
+				return true;
+
+		} catch (Exception e) {
+			return false;
+		}
+		return false;
+	}
+
+	public static ArrayList<String> getEmployeesByDepartmentId(String deptId, String ManagerId)
+	{
+		ArrayList<String> Employees = new ArrayList<String>();
+
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE DEPARTMENT='" + deptId + "'");
+			
+			while (rs.next())
+			{
+				if (!rs.getString("ID").equals(ManagerId))
+				{
+					Employees.add(rs.getString("ID"));
+				}
+			}
+				
+
+		} catch (Exception e) {
+			System.out.println("Error - " + e.getMessage());
+		}
+		
+		return Employees;
+	}
+
+	public static ArrayList<request> getPendingRequestsByUserId(String UserId)
+	{
+		ArrayList<request> req = new ArrayList<request>();
+
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM pto_requests WHERE EMPLOYEE='" + UserId + "' AND STATUS='Pending'");
+			
+			while (rs.next())
+			{
+				request r = new request();
+				r.Date = rs.getObject("REQUESTDATE").toString();
+				r.Hours = rs.getObject("HOURS").toString();
+				r.Reason = rs.getObject("REASON").toString();
+				r.Status = rs.getObject("STATUS").toString();
+				r.ID = rs.getObject("ID").toString();
+				req.add(r);
+			}
+				
+
+		} catch (Exception e) {
+			System.out.println("Error - " + e.getMessage());
+		}
+
+		return req;
+	}
+
+	public static String getFromUserById(String UserId, String keyword)
+	{
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE ID='" + UserId + "'");
+			rs.next();
+
+			return rs.getString(keyword);
+			
+		} catch (Exception e) {
+			return "";
 		}
 	}
 }
