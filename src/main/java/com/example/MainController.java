@@ -135,7 +135,7 @@ public class MainController {
 
 			if (request.getParameterMap().containsKey("id"))
 			{
-				if (request.getParameter("id").isBlank() || request.getParameter("id").isEmpty())
+				if (request.getParameter("id").equals("") || request.getParameter("id").isEmpty())
 				{
 					model.put("ProfileData", database.getProfileById(database.getUserID(getAttributeFromSession(request, "user"))));
 					return "profile";
