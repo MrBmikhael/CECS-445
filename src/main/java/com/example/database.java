@@ -16,6 +16,9 @@ import org.springframework.boot.builder.SpringApplicationBuilder;
 import java.util.concurrent.TimeUnit;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Dictionary;
+import java.util.HashMap;
+
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.ResultSet;
@@ -311,5 +314,40 @@ public class database {
 		} catch (Exception e) {
 			return "";
 		}
+	}
+
+	public static String getDepartmentNameById(String Id)
+	{
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM departments WHERE ID='" + Id + "'");
+			rs.next();
+			return rs.getString("NAME");
+
+		} catch (Exception e) {
+			System.out.println("Error - " + e.getMessage());
+		}
+		return "";
+	}
+
+	public static Map<String, String> getProfileById(String UserId)
+	{
+		Map<String, String> ProfileData = new HashMap<String, String>();
+
+		try (Connection connection = database.getDataSource().getConnection()) {
+			Statement stmt = connection.createStatement();
+			ResultSet rs = stmt.executeQuery("SELECT * FROM users WHERE ID='" + UserId + "'");
+			rs.next();
+
+			ProfileData.put("FULLNAME", rs.getString("FULLNAME"));
+			ProfileData.put("USERNAME", rs.getString("USERNAME"));
+			ProfileData.put("DEPARTMENT", getDepartmentNameById(rs.getString("DEPARTMENT")));
+			ProfileData.put("PTO", "40");
+			
+		} catch (Exception e) {
+			System.out.println("Error: " + e.getMessage());
+		}
+
+		return ProfileData;
 	}
 }

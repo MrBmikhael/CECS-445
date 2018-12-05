@@ -129,10 +129,23 @@ public class MainController {
 			while(attributes.hasMoreElements())
 			{
 				String ele = attributes.nextElement().toString();
-				// System.out.println(ele + ":" + request.getSession().getAttribute(ele));
+				System.out.println(ele + " : " + request.getSession().getAttribute(ele));
 				model.put(ele, request.getSession().getAttribute(ele));
 			}
-			
+
+			if (request.getParameterMap().containsKey("id"))
+			{
+				if (request.getParameter("id").isBlank() || request.getParameter("id").isEmpty())
+				{
+					model.put("ProfileData", database.getProfileById(database.getUserID(getAttributeFromSession(request, "user"))));
+					return "profile";
+				}
+
+				model.put("ProfileData", database.getProfileById(request.getParameter("id").toString()));
+				return "profile";
+			}
+
+			model.put("ProfileData", database.getProfileById(database.getUserID(getAttributeFromSession(request, "user"))));
 			return "profile";
 		}
 		else
